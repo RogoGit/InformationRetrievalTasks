@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# materials for tasks
+resources/
+
+# idea
+.idea/
