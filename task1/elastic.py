@@ -65,6 +65,53 @@ stemmed_index_settings = {
         }
     }
 
+stemmed_pagerank_index_settings = {
+        "settings": {
+            "number_of_shards": 1,
+            "number_of_replicas": 0,
+            "analysis": {
+                "filter": {
+                    "russian_stop": {
+                        "type": "stop",
+                        "stopwords": "_russian_"
+                    },
+                    "russian_stemmer": {
+                        "type": "stemmer",
+                        "language": "russian"
+                    }
+                },
+                "analyzer": {
+                    "rebuilt_russian": {
+                        "type": "custom",
+                        "tokenizer": "standard",
+                        "filter": [
+                            "lowercase",
+                            "russian_stop",
+                            "russian_stemmer"
+                        ]
+                    }
+                }
+            }
+        },
+        "mappings": {
+            "properties": {
+                "content": {
+                    "type": "text",
+                    "analyzer": "rebuilt_russian"
+                },
+                "doc_id": {
+                    "type": "text"
+                },
+                "doc_url": {
+                    "type": "text"
+                },
+                "pagerank": {
+                    "type": "rank_feature"
+                }
+            }
+        }
+    }
+
 
 def connect_elasticsearch():
     _es = None
@@ -106,9 +153,23 @@ def create_stemmed_documents_index(es_obj):
         print(str(ex))
 
 
+# es index with stemmed documents with stop words removal + pagerank counted
+def create_stemmed_documents_with_pagerank_index(es_obj):
+    index_name = 'stemmed_pagerank'
+    try:
+        if not es_obj.indices.exists(index=index_name):
+            es_obj.indices.create(index=index_name, body=stemmed_pagerank_index_settings)
+            print('Created index for stemmed documents with pagerank')
+        else:
+            print('Index for stemmed documents with pagerank already exists')
+    except Exception as ex:
+        print(str(ex))
+
+
 def create_indexes_if_missing(es_obj):
     create_raw_documents_index(es_obj)
     create_stemmed_documents_index(es_obj)
+    create_stemmed_documents_with_pagerank_index(es_obj)
 
 
 def import_record_to_elastic(es_obj, json_record, index_name):
