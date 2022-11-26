@@ -66,12 +66,12 @@ def import_pagerank_to_elastic_search(es_obj, document_by_page_url, pagerank_cou
 
 
 def visualize_graph(page_graph):
-    nx.write_gexf(page_graph, "../resources/graph.gexf")
+    nx.write_gexf(page_graph, "../resources/graph_full.gexf")
     file_contents = ""
     # fix illegal characters in resulting XML
-    with open("../resources/graph.gexf", "r") as file:
+    with open("../resources/graph_full.gexf", "r") as file:
         file_contents = file.read()
-    with open("../resources/graph.gexf", "w") as file:
+    with open("../resources/graph_full.gexf", "w") as file:
         illegal_unichrs = [(0x00, 0x08), (0x0B, 0x0C), (0x0E, 0x1F),
                            (0x7F, 0x84), (0x86, 0x9F),
                            (0xFDD0, 0xFDDF), (0xFFFE, 0xFFFF)]
